@@ -27,7 +27,24 @@ function operation(){
         switch(action){
             case 'Criar Conta':
                 createAccount()
-                break;
+            break;
+            
+            case 'Depositar':
+
+            break;
+
+            case 'Consultar Saldo':
+
+            break;
+
+            case 'Sacar':
+
+            break;
+
+            case 'Sair':
+                console.log(chalk.bgCyan.black('Obrigado por usar o Node Bank!'))
+                process.exit()
+            break;
         }
     })
     .catch((err) => {console.log(err)})
