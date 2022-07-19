@@ -36,7 +36,7 @@ function operation(){
             break;
 
             case 'Consultar Saldo':
-
+                getAccountBalance()
             break;
 
             case 'Sacar':
@@ -168,4 +168,28 @@ function getAccount(accountName){
     })
 
     return JSON.parse(accountJSON)
+}
+
+//show account balance
+function getAccountBalance(){
+    inquirer.prompt([
+        {
+            name: 'accountName',
+            message: 'Qual o nome da sua conta'
+        }
+    ]).then((answer) => {
+        const accountName = answer['accountName']
+
+        //verify if account exists
+        if(!checkAccount(accountName)){
+            return getAccountBalance()
+        }
+
+        const accountData = getAccount(accountName)
+        clear()
+        console.log(chalk.bgCyan.black(`Olá, seu saldo é exatamente R$ ${accountData.balance}`))
+        console.log('\n\r\n\r')
+        operation()
+    })
+    .catch(err => console.log(err))
 }
