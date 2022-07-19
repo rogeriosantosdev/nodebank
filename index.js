@@ -6,6 +6,7 @@ import chalk from 'chalk'
 import fs from 'fs'
 import { clear } from 'console'
 
+clear()
 operation()
 
 function operation(){
@@ -36,11 +37,13 @@ function operation(){
             break;
 
             case 'Consultar Saldo':
+                clear()
                 getAccountBalance()
             break;
 
             case 'Sacar':
-
+                clear()
+                withdraw()
             break;
 
             case 'Sair':
@@ -192,4 +195,56 @@ function getAccountBalance(){
         operation()
     })
     .catch(err => console.log(err))
+}
+
+//withdraw an amount from user account
+function withdraw(){
+    inquirer.prompt([
+        {
+            name: 'accountName',
+            message: 'Qual o nome da conta que deseja sacar'
+        }
+    ])
+    .then((answer) => {
+        const accountName = answer['accountName']
+
+        if(!checkAccount(accountName)){
+            return withdraw()
+        }
+
+        inquirer.prompt([
+            {
+                name: 'amount',
+                message: 'Qual valor você deseja sacar?'
+            }
+        ])
+        .then((answer) => {
+            const amount = answer['amount']
+
+            removeAmount(accountName, amount)
+        })
+        .catch(err => console.log(err))
+    })
+    .catch(err => console.log(err))
+}
+
+function removeAmount(accountName, amount){
+    const accountData = getAccount(accountName)
+    
+    if(!amount || isNaN(amount)){
+        console.log(chalk.bgRed.black('Ocorreu um erro, informe novamente o valor para ser sacado!'))
+        console.log('\n\r\n\r')
+        return withdraw()
+    } else if (accountData.balance < amount){
+        console.log(chalk.bgRed.black('O valor que você está tentando sacar é maior que o valor atual, tente novamente!'))
+        console.log('\n\r\n\r')
+        return withdraw()
+    }
+
+    accountData.balance -= parseFloat(amount)
+    
+    fs.writeFileSync(`accounts/${accountName}.json`, JSON.stringify(accountData), ((err) => console.log(err)))
+
+    console.log(chalk.bgGreen.black(`O valor de R$ ${amount} foi retirado da sua conta!`))
+    operation()
 }
